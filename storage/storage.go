@@ -8,6 +8,7 @@ var (
 )
 
 type URLStorage interface {
-	Get(short string) (lng string, err error)
-	Post(short, lng string) (err error)
+	GetLong(short string) (long string, err error)
+	Create(short, long string) (err error)
+	Revoke(short string) (err error)
 }

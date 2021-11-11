@@ -16,7 +16,7 @@ func NewMemStorage() storage.URLStorage {
 	}
 }
 
-func (s *memStorage) Get(short string) (lng string, err error) {
+func (s *memStorage) GetLong(short string) (lng string, err error) {
 	s.lock.RLock()
 	defer s.lock.RUnlock()
 
@@ -27,8 +27,20 @@ func (s *memStorage) Get(short string) (lng string, err error) {
 	return
 }
 
-func (s *memStorage) Post(short, lng string) (err error) {
-	_, errGet := s.Get(short)
+func (s *memStorage) Revoke(short string) (err error) {
+	_, errGet := s.GetLong(short)
+	if errGet != nil {
+		return errGet
+	}
+
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	delete(s.m, short)
+	return
+}
+
+func (s *memStorage) Create(short, lng string) (err error) {
+	_, errGet := s.GetLong(short)
 	if errGet != storage.ErrNotFound {
 		return storage.ErrAlreadyExists
 	}
