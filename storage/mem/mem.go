@@ -3,6 +3,7 @@ package mem
 import (
 	"context"
 	"sync"
+	"time"
 	"urlshort/storage"
 )
 
@@ -28,7 +29,7 @@ func (s *memStorage) GetLong(_ context.Context, short string) (long string, err 
 	return
 }
 
-func (s *memStorage) Revoke(ctx context.Context, short string) (err error) {
+func (s *memStorage) Delete(ctx context.Context, short string) (err error) {
 	_, errGet := s.GetLong(ctx, short)
 	if errGet != nil {
 		return errGet
@@ -50,5 +51,20 @@ func (s *memStorage) Create(ctx context.Context, short, long string) (err error)
 	defer s.lock.Unlock()
 
 	s.m[short] = long
+	return
+}
+
+func (s *memStorage) List(ctx context.Context) (items []storage.Item, err error) {
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+
+	for short, long := range s.m {
+		items = append(items, storage.Item{
+			Short:     short,
+			Long:      long,
+			CreatedAt: time.Now(),
+		})
+	}
+
 	return
 }

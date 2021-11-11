@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List</title>
+</head>
+<body>
+
+<ul>
+    {{range .Items}}
+    <li><a href="{{.Long}}">{{.Short}}</a> - created: {{.CreatedAt}}</li>
+    {{end}}
+</ul>
+
+</body>
+</html>

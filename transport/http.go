@@ -49,7 +49,7 @@ func (s *Shortener) Create(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		params := renderer.CreateSuccessParams{ResultURL: "http://localhost:8000/" + short}
+		params := renderer.CreateSuccessParams{ResultURL: "/" + short}
 		err = renderer.RenderCreateSuccess(w, params)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -60,6 +60,11 @@ func (s *Shortener) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Shortener) Open(w http.ResponseWriter, r *http.Request) {
+	if r.RequestURI == "/" {
+		http.Redirect(w, r, "/list", http.StatusPermanentRedirect)
+		return
+	}
+
 	long, err := s.storage.GetLong(r.Context(), r.RequestURI[1:])
 	if err == storage.ErrNotFound {
 		w.WriteHeader(http.StatusNotFound)
@@ -71,5 +76,21 @@ func (s *Shortener) Open(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, long, http.StatusPermanentRedirect)
+	return
+}
+
+func (s *Shortener) List(w http.ResponseWriter, r *http.Request) {
+	items, err := s.storage.List(r.Context())
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	err = renderer.RenderList(w, renderer.ListParams{Items: items})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	return
 }

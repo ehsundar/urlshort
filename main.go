@@ -19,6 +19,7 @@ func main() {
 	shortener := transport.NewHTTPShortener(s, c)
 
 	http.HandleFunc("/create", shortener.Create)
+	http.HandleFunc("/list", shortener.List)
 	http.HandleFunc("/", shortener.Open)
 
 	if err := http.ListenAndServe(":8000", http.DefaultServeMux); err != nil {
