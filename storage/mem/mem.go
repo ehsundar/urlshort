@@ -11,7 +11,7 @@ type memStorage struct {
 	lock sync.RWMutex
 }
 
-func NewMemStorage() storage.URLStorage {
+func NewMemStorage() storage.Storage {
 	return &memStorage{
 		m: make(map[string]string),
 	}

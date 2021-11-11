@@ -10,7 +10,7 @@ type pgStorage struct {
 	q *Queries
 }
 
-func NewStorage(db *sql.DB) storage.URLStorage {
+func NewStorage(db *sql.DB) storage.Storage {
 	return &pgStorage{
 		q: New(db),
 	}

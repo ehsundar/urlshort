@@ -9,11 +9,11 @@ import (
 )
 
 type Shortener struct {
-	storage  storage.URLStorage
+	storage  storage.Storage
 	composer composer.Composer
 }
 
-func NewHTTPShortener(s storage.URLStorage, c composer.Composer) *Shortener {
+func NewHTTPShortener(s storage.Storage, c composer.Composer) *Shortener {
 	return &Shortener{
 		storage:  s,
 		composer: c,

@@ -10,7 +10,7 @@ var (
 	ErrNotFound      = errors.New("not found")
 )
 
-type URLStorage interface {
+type Storage interface {
 	GetLong(ctx context.Context, short string) (long string, err error)
 	Create(ctx context.Context, short, long string) (err error)
 	Revoke(ctx context.Context, short string) (err error)
