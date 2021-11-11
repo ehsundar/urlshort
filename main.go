@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"net/http"
 	"urlshort/composer"
-	"urlshort/core"
 	"urlshort/storage/pg"
+	"urlshort/transport"
 
 	_ "github.com/lib/pq"
 )
@@ -16,7 +16,7 @@ func main() {
 
 	s := pg.NewStorage(db)
 	c := composer.NewMd5Base64()
-	shortener := core.NewShortener(s, c)
+	shortener := transport.NewHTTPShortener(s, c)
 
 	http.HandleFunc("/create", shortener.Create)
 	http.HandleFunc("/", shortener.Open)

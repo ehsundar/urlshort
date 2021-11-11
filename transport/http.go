@@ -1,11 +1,11 @@
-package core
+package transport
 
 import (
 	"fmt"
 	"net/http"
 	"urlshort/composer"
-	"urlshort/renderer"
 	"urlshort/storage"
+	"urlshort/templates/renderer"
 )
 
 type Shortener struct {
@@ -13,7 +13,7 @@ type Shortener struct {
 	composer composer.Composer
 }
 
-func NewShortener(s storage.URLStorage, c composer.Composer) *Shortener {
+func NewHTTPShortener(s storage.URLStorage, c composer.Composer) *Shortener {
 	return &Shortener{
 		storage:  s,
 		composer: c,
