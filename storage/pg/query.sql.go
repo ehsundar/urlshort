@@ -5,6 +5,7 @@ package pg
 
 import (
 	"context"
+	"time"
 )
 
 const create = `-- name: Create :one
@@ -25,6 +26,17 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (string, error) 
 	return short, err
 }
 
+const delete = `-- name: Delete :exec
+delete
+from links
+where short = $1
+`
+
+func (q *Queries) Delete(ctx context.Context, short string) error {
+	_, err := q.db.ExecContext(ctx, delete, short)
+	return err
+}
+
 const getLong = `-- name: GetLong :one
 select long
 from links
@@ -39,13 +51,37 @@ func (q *Queries) GetLong(ctx context.Context, short string) (string, error) {
 	return long, err
 }
 
-const revoke = `-- name: Revoke :exec
-delete
+const list = `-- name: List :many
+select short, long, created_at
 from links
-where short = $1
+order by created_at desc
 `
 
-func (q *Queries) Revoke(ctx context.Context, short string) error {
-	_, err := q.db.ExecContext(ctx, revoke, short)
-	return err
+type ListRow struct {
+	Short     string
+	Long      string
+	CreatedAt time.Time
+}
+
+func (q *Queries) List(ctx context.Context) ([]ListRow, error) {
+	rows, err := q.db.QueryContext(ctx, list)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListRow
+	for rows.Next() {
+		var i ListRow
+		if err := rows.Scan(&i.Short, &i.Long, &i.CreatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
