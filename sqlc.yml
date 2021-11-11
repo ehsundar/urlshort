@@ -1,7 +1,7 @@
 version: 1
 packages:
-  - path: "tutorial"
-    name: "tutorial"
+  - path: "storage/pg"
+    name: "pg"
     engine: "postgresql"
-    schema: "schema.sql"
-    queries: "query.sql"
+    schema: "storage/pg/sql/schema.sql"
+    queries: "storage/pg/sql/query.sql"
