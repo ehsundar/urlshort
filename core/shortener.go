@@ -69,3 +69,18 @@ func (s *Shortener) Create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}
 }
+
+func (s *Shortener) Open(w http.ResponseWriter, r *http.Request) {
+	long, err := s.storage.GetLong(r.Context(), r.RequestURI[1:])
+	if err == storage.ErrNotFound {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, long, http.StatusPermanentRedirect)
+	return
+}

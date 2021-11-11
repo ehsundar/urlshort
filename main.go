@@ -29,10 +29,7 @@ func main() {
 	shortener := core.NewShortener(s, c)
 
 	http.HandleFunc("/create", shortener.Create)
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
+	http.HandleFunc("/", shortener.Open)
 
 	if err := http.ListenAndServe(":8000", http.DefaultServeMux); err != nil {
 		panic(err)
