@@ -11,4 +11,5 @@ where short = $1;
 
 -- name: Create :one
 insert into links(short, long)
-values ($1, $2);
+values ($1, $2)
+returning short;
