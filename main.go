@@ -1,15 +1,31 @@
 package main
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"urlshort/composer"
-	"urlshort/storage/mem"
+	"urlshort/storage/pg"
+
+	_ "github.com/lib/pq"
 )
 
 func main() {
-	strg := mem.NewMemStorage()
+	ctx := context.Background()
+
+	dataSource := "postgres://postgres:mypassword@localhost/postgres?sslmode=disable"
+	db, err := sql.Open("postgres", dataSource)
+	if err != nil {
+		panic(err)
+	}
+
+	if err = db.PingContext(ctx); err != nil {
+		panic(err)
+	}
+
+	s := pg.NewStorage(db)
 	generalComposer := composer.NewMd5Base64()
 
 	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +44,7 @@ func main() {
 
 		for nonce := 0; ; nonce++ {
 			short = generalComposer.Compose(string(body), fmt.Sprintf("%d", nonce))
-			err = strg.Create(nil, short, string(body))
+			err = s.Create(ctx, short, string(body))
 			if err == nil {
 				break
 			}
