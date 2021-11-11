@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"net/http"
-	"urlshort/composer"
+	"urlshort/core/composer"
 	"urlshort/storage/pg"
 	"urlshort/transport"
 

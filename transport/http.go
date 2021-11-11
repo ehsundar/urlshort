@@ -3,7 +3,7 @@ package transport
 import (
 	"fmt"
 	"net/http"
-	"urlshort/composer"
+	"urlshort/core/composer"
 	"urlshort/storage"
 	"urlshort/templates/renderer"
 )
