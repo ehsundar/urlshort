@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"urlshort/composer"
@@ -53,7 +54,14 @@ func (s *Shortener) Create(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		_, err = w.Write([]byte(short))
+		t := template.Must(template.ParseFiles("templates/create_success.html"))
+		if err != nil {
+			fmt.Printf("templates: %s\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		err = t.Execute(w, map[string]string{"ResultURL": "http://localhost:8000/" + short})
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
