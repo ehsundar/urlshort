@@ -1,6 +1,7 @@
 package mem
 
 import (
+	"context"
 	"sync"
 	"urlshort/storage"
 )
@@ -16,19 +17,19 @@ func NewMemStorage() storage.URLStorage {
 	}
 }
 
-func (s *memStorage) GetLong(short string) (lng string, err error) {
+func (s *memStorage) GetLong(_ context.Context, short string) (long string, err error) {
 	s.lock.RLock()
 	defer s.lock.RUnlock()
 
-	lng, ok := s.m[short]
+	long, ok := s.m[short]
 	if !ok {
 		err = storage.ErrNotFound
 	}
 	return
 }
 
-func (s *memStorage) Revoke(short string) (err error) {
-	_, errGet := s.GetLong(short)
+func (s *memStorage) Revoke(ctx context.Context, short string) (err error) {
+	_, errGet := s.GetLong(ctx, short)
 	if errGet != nil {
 		return errGet
 	}
@@ -39,8 +40,8 @@ func (s *memStorage) Revoke(short string) (err error) {
 	return
 }
 
-func (s *memStorage) Create(short, lng string) (err error) {
-	_, errGet := s.GetLong(short)
+func (s *memStorage) Create(ctx context.Context, short, long string) (err error) {
+	_, errGet := s.GetLong(ctx, short)
 	if errGet != storage.ErrNotFound {
 		return storage.ErrAlreadyExists
 	}
@@ -48,6 +49,6 @@ func (s *memStorage) Create(short, lng string) (err error) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	s.m[short] = lng
+	s.m[short] = long
 	return
 }

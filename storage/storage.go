@@ -1,6 +1,9 @@
 package storage
 
-import "errors"
+import (
+	"context"
+	"errors"
+)
 
 var (
 	ErrAlreadyExists = errors.New("already exists")
@@ -8,7 +11,7 @@ var (
 )
 
 type URLStorage interface {
-	GetLong(short string) (long string, err error)
-	Create(short, long string) (err error)
-	Revoke(short string) (err error)
+	GetLong(ctx context.Context, short string) (long string, err error)
+	Create(ctx context.Context, short, long string) (err error)
+	Revoke(ctx context.Context, short string) (err error)
 }

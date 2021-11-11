@@ -28,7 +28,7 @@ func main() {
 
 		for nonce := 0; ; nonce++ {
 			short = generalComposer.Compose(string(body), fmt.Sprintf("%d", nonce))
-			err = strg.Create(short, string(body))
+			err = strg.Create(nil, short, string(body))
 			if err == nil {
 				break
 			}
