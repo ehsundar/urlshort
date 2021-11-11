@@ -12,17 +12,7 @@ import (
 )
 
 func main() {
-	ctx := context.Background()
-
-	dataSource := "postgres://postgres:mypassword@localhost/postgres?sslmode=disable"
-	db, err := sql.Open("postgres", dataSource)
-	if err != nil {
-		panic(err)
-	}
-
-	if err = db.PingContext(ctx); err != nil {
-		panic(err)
-	}
+	db := getDBOrPanic()
 
 	s := pg.NewStorage(db)
 	c := composer.NewMd5Base64()
@@ -34,4 +24,17 @@ func main() {
 	if err := http.ListenAndServe(":8000", http.DefaultServeMux); err != nil {
 		panic(err)
 	}
+}
+
+func getDBOrPanic() *sql.DB {
+	dataSource := "postgres://postgres:mypassword@localhost/postgres?sslmode=disable"
+	db, err := sql.Open("postgres", dataSource)
+	if err != nil {
+		panic(err)
+	}
+
+	if err = db.PingContext(context.Background()); err != nil {
+		panic(err)
+	}
+	return db
 }

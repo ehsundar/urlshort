@@ -2,10 +2,9 @@ package core
 
 import (
 	"fmt"
-	"html/template"
-	"io/ioutil"
 	"net/http"
 	"urlshort/composer"
+	"urlshort/renderer"
 	"urlshort/storage"
 )
 
@@ -23,18 +22,14 @@ func NewShortener(s storage.URLStorage, c composer.Composer) *Shortener {
 
 func (s *Shortener) Create(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		template, err := ioutil.ReadFile("templates/create.html")
+		err := renderer.RenderCreate(w, renderer.CreateParams{})
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		_, err = w.Write(template)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-		}
-
 		w.WriteHeader(http.StatusOK)
+		return
 	}
 
 	if r.Method == http.MethodPost {
@@ -54,14 +49,8 @@ func (s *Shortener) Create(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		t := template.Must(template.ParseFiles("templates/create_success.html"))
-		if err != nil {
-			fmt.Printf("templates: %s\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		err = t.Execute(w, map[string]string{"ResultURL": "http://localhost:8000/" + short})
+		params := renderer.CreateSuccessParams{ResultURL: "http://localhost:8000/" + short}
+		err = renderer.RenderCreateSuccess(w, params)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
