@@ -99,6 +99,6 @@ func (s *Shortener) Revoke(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusAccepted)
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 	return
 }

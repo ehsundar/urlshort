@@ -8,9 +8,11 @@
 
 <h1>List of registered entries</h1>
 
+<a href="/create">Create</a>
+
 <ul>
     {{range .Items}}
-    <li><a href="{{.Long}}">{{.Short}}</a> - created: {{.CreatedAt}}</li>
+    <li><a href="{{.Long}}">{{.Short}}</a> - created: {{.CreatedAt}} - [<a href="/revoke/{{.Short}}">Revoke</a>]</li>
     {{end}}
 </ul>
 

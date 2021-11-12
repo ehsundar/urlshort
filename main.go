@@ -21,9 +21,9 @@ func main() {
 
 	r := router.Router{}
 	r.Register("/create", shortener.Create)
-	r.Register("/", shortener.List)
 	r.Register("/revoke/(?P<Short>[a-zA-Z0-9]{6,})", shortener.Revoke)
 	r.Register("/(?P<Short>[a-zA-Z0-9]{6,})", shortener.Open)
+	r.Register("/", shortener.List)
 
 	http.HandleFunc("/", r.Handle)
 
