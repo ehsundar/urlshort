@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"net/http"
 	"urlshort/core/composer"
+	"urlshort/router"
 	"urlshort/storage/pg"
 	"urlshort/transport"
 
@@ -18,9 +19,13 @@ func main() {
 	c := composer.NewMd5Base64()
 	shortener := transport.NewHTTPShortener(s, c)
 
-	http.HandleFunc("/create", shortener.Create)
-	http.HandleFunc("/list", shortener.List)
-	http.HandleFunc("/", shortener.Open)
+	r := router.Router{}
+	r.Register("/create", shortener.Create)
+	r.Register("/", shortener.List)
+	r.Register("/revoke/(?P<Short>[a-zA-Z0-9]{6,})", shortener.Revoke)
+	r.Register("/(?P<Short>[a-zA-Z0-9]{6,})", shortener.Open)
+
+	http.HandleFunc("/", r.Handle)
 
 	if err := http.ListenAndServe(":8000", http.DefaultServeMux); err != nil {
 		panic(err)

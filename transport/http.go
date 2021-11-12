@@ -60,12 +60,8 @@ func (s *Shortener) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Shortener) Open(w http.ResponseWriter, r *http.Request) {
-	if r.RequestURI == "/" {
-		http.Redirect(w, r, "/list", http.StatusPermanentRedirect)
-		return
-	}
-
-	long, err := s.storage.GetLong(r.Context(), r.RequestURI[1:])
+	short := r.Context().Value("Short").(string)
+	long, err := s.storage.GetLong(r.Context(), short)
 	if err == storage.ErrNotFound {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -92,5 +88,17 @@ func (s *Shortener) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	return
+}
+
+func (s *Shortener) Revoke(w http.ResponseWriter, r *http.Request) {
+	short := r.Context().Value("Short").(string)
+	err := s.storage.Delete(r.Context(), short)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusAccepted)
 	return
 }
